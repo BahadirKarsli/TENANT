@@ -6,3 +6,4 @@ export * from './exchange-rate.service';
 export * from './content.service';
 export * from './news.service';
 export * from './admin-content.service';
+export * from './product-import.service';

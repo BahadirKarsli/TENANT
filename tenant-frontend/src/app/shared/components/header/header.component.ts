@@ -69,6 +69,9 @@ import { AuthService, CartService, ExchangeRateService } from '../../../core/ser
                     <a routerLink="/admin/orders" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg">
                       📦 Sipariş Yönetimi
                     </a>
+                    <a routerLink="/admin/import" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                      📥 Ürün Import
+                    </a>
                     <a routerLink="/admin/settings" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
                       ⚙️ Site Ayarları
                     </a>

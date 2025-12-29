@@ -50,4 +50,8 @@ export class ProductService {
             tap(response => this.categoriesSignal.set(response.data))
         );
     }
+
+    deleteProduct(id: string): Observable<{ message: string }> {
+        return this.http.delete<{ message: string }>(`${this.apiUrl}/admin/products/${id}`);
+    }
 }

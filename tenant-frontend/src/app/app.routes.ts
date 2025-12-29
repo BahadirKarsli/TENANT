@@ -62,6 +62,10 @@ export const routes: Routes = [
             {
                 path: 'news',
                 loadComponent: () => import('./features/admin/news/admin-news.component').then(m => m.AdminNewsComponent)
+            },
+            {
+                path: 'import',
+                loadComponent: () => import('./features/admin/import/admin-import.component').then(m => m.AdminImportComponent)
             }
         ]
     },

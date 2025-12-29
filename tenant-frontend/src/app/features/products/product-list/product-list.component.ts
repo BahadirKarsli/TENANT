@@ -76,6 +76,16 @@ import { ProductFilterComponent } from '../product-filter/product-filter.compone
                       }
                       Sepete Ekle
                     </button>
+                  } @else {
+                    <button 
+                      (click)="confirmDelete(product)"
+                      [disabled]="deletingProduct() === product.id"
+                      class="w-full py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50">
+                      @if (deletingProduct() === product.id) {
+                        <span class="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></span>
+                      }
+                      🗑️ Sil
+                    </button>
                   }
                 </div>
               </div>
@@ -109,6 +119,28 @@ import { ProductFilterComponent } from '../product-filter/product-filter.compone
         }
       </main>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    @if (productToDelete()) {
+      <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
+          <h2 class="text-xl font-bold text-red-600 mb-4">⚠️ Ürün Silme</h2>
+          <p class="text-gray-700 mb-6">
+            <strong>{{ productToDelete()!.name }}</strong> ürününü silmek istediğinize emin misiniz?
+            <br><br>
+            <span class="text-red-500 text-sm">Bu işlem geri alınamaz!</span>
+          </p>
+          <div class="flex justify-end gap-3">
+            <button (click)="cancelDelete()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+              İptal
+            </button>
+            <button (click)="deleteProduct()" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+              Evet, Sil
+            </button>
+          </div>
+        </div>
+      </div>
+    }
   `
 })
 export class ProductListComponent implements OnInit {
@@ -123,6 +155,8 @@ export class ProductListComponent implements OnInit {
   categories = this.productService.categories;
   loading = signal(true);
   addingToCart = signal<string | null>(null);
+  deletingProduct = signal<string | null>(null);
+  productToDelete = signal<Product | null>(null);
 
   currentPage = signal(1);
   totalPages = signal(1);
@@ -174,6 +208,34 @@ export class ProductListComponent implements OnInit {
     this.cartService.addItem({ product_id: product.id }).subscribe({
       next: () => this.addingToCart.set(null),
       error: () => this.addingToCart.set(null)
+    });
+  }
+
+  confirmDelete(product: Product): void {
+    this.productToDelete.set(product);
+  }
+
+  cancelDelete(): void {
+    this.productToDelete.set(null);
+  }
+
+  deleteProduct(): void {
+    const product = this.productToDelete();
+    if (!product) return;
+
+    this.productToDelete.set(null);
+    this.deletingProduct.set(product.id);
+
+    this.productService.deleteProduct(product.id).subscribe({
+      next: () => {
+        this.deletingProduct.set(null);
+        this.loadProducts();
+      },
+      error: (err) => {
+        this.deletingProduct.set(null);
+        const message = err.error?.message || err.message || 'Bilinmeyen hata';
+        alert('Ürün silinemedi: ' + message);
+      }
     });
   }
 }

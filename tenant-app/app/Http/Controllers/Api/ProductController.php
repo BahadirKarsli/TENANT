@@ -133,4 +133,38 @@ final class ProductController extends Controller
 
         return response()->json(['data' => $categories]);
     }
+
+    /**
+     * Delete a product (admin only)
+     */
+    public function destroy(string $id): JsonResponse
+    {
+        try {
+            $product = Product::findOrFail($id);
+            
+            $productName = $product->name;
+            $product->delete();
+            
+            // Clear entire cache to ensure product lists are updated
+            Cache::flush();
+
+            return response()->json([
+                'message' => "Ürün '{$productName}' başarıyla silindi.",
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Ürün bulunamadı.',
+            ], 404);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Foreign key constraint failure
+            return response()->json([
+                'message' => 'Bu ürün siparişlerde kullanıldığı için silinemiyor.',
+            ], 400);
+        } catch (\Throwable $e) {
+            \Log::error('Product delete error', ['id' => $id, 'error' => $e->getMessage()]);
+            return response()->json([
+                'message' => 'Ürün silinirken hata oluştu: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }

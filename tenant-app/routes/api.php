@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Api\Admin\UpdateController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
+use App\Http\Controllers\Admin\ProductImportController;
 use App\Http\Controllers\PublicContentController;
 use App\Http\Controllers\Webhook\WmsWebhookController;
 use App\Http\Middleware\AdminMiddleware;
@@ -82,6 +83,20 @@ Route::middleware(['auth:sanctum', LicenseMiddleware::class])->group(function ()
         Route::put('/news/{news}', [AdminNewsController::class, 'update']);
         Route::delete('/news/{news}', [AdminNewsController::class, 'destroy']);
         Route::post('/news/{news}/toggle-publish', [AdminNewsController::class, 'togglePublish']);
+
+        // Product import
+        Route::get('/imports', [ProductImportController::class, 'index']);
+        Route::post('/imports/upload', [ProductImportController::class, 'upload']);
+        Route::post('/imports/{importId}/execute', [ProductImportController::class, 'import']);
+        
+        // ERP connections
+        Route::get('/erp/connections', [ProductImportController::class, 'erpConnections']);
+        Route::post('/erp/connections', [ProductImportController::class, 'saveErpConnection']);
+        Route::post('/erp/test', [ProductImportController::class, 'testErpConnection']);
+        Route::post('/erp/sync', [ProductImportController::class, 'syncErp']);
+
+        // Product management
+        Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 
         // System updates
         Route::get('/updates/check', [UpdateController::class, 'checkForUpdates']);
