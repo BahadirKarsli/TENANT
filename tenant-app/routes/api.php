@@ -8,6 +8,9 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Api\Admin\UpdateController;
+use App\Http\Controllers\Admin\SiteSettingController;
+use App\Http\Controllers\Admin\NewsController as AdminNewsController;
+use App\Http\Controllers\PublicContentController;
 use App\Http\Controllers\Webhook\WmsWebhookController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\LicenseMiddleware;
@@ -21,6 +24,11 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes (no auth required)
 Route::post('/auth/login', [AuthController::class, 'login']);
+
+// Public content routes (no auth required)
+Route::get('/content/settings', [PublicContentController::class, 'settings']);
+Route::get('/content/news', [PublicContentController::class, 'news']);
+Route::get('/content/news/{id}', [PublicContentController::class, 'newsItem']);
 
 // Webhook routes (no auth, but signature validated)
 Route::post('/wms/webhook', [WmsWebhookController::class, 'handle']);
@@ -61,8 +69,23 @@ Route::middleware(['auth:sanctum', LicenseMiddleware::class])->group(function ()
         Route::post('/orders/{id}/approve', [AdminOrderController::class, 'approve']);
         Route::put('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
 
+        // Site settings management
+        Route::get('/settings', [SiteSettingController::class, 'index']);
+        Route::get('/settings/group/{group}', [SiteSettingController::class, 'group']);
+        Route::put('/settings', [SiteSettingController::class, 'update']);
+        Route::put('/settings/{key}', [SiteSettingController::class, 'updateSingle']);
+
+        // News management
+        Route::get('/news', [AdminNewsController::class, 'index']);
+        Route::post('/news', [AdminNewsController::class, 'store']);
+        Route::get('/news/{news}', [AdminNewsController::class, 'show']);
+        Route::put('/news/{news}', [AdminNewsController::class, 'update']);
+        Route::delete('/news/{news}', [AdminNewsController::class, 'destroy']);
+        Route::post('/news/{news}/toggle-publish', [AdminNewsController::class, 'togglePublish']);
+
         // System updates
         Route::get('/updates/check', [UpdateController::class, 'checkForUpdates']);
         Route::post('/updates/perform', [UpdateController::class, 'performUpdate']);
     });
 });
+

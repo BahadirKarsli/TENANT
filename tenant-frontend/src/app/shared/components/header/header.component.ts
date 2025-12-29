@@ -58,10 +58,25 @@ import { AuthService, CartService, ExchangeRateService } from '../../../core/ser
                 Siparişler
               </a>
               @if (isAdmin()) {
-                <a routerLink="/admin" 
-                   class="text-gray-600 hover:text-primary-600 font-medium transition-colors">
-                  Admin
-                </a>
+                <div class="relative group">
+                  <button class="text-gray-600 hover:text-primary-600 font-medium transition-colors flex items-center gap-1">
+                    Admin
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                  </button>
+                  <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                    <a routerLink="/admin/orders" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg">
+                      📦 Sipariş Yönetimi
+                    </a>
+                    <a routerLink="/admin/settings" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                      ⚙️ Site Ayarları
+                    </a>
+                    <a routerLink="/admin/news" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-b-lg">
+                      📰 Haber Yönetimi
+                    </a>
+                  </div>
+                </div>
               }
             }
           </nav>
